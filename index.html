@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantity Measurement App | Smart & Accurate Conversions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0b0f1a;
+            --indigo-glow: rgba(99, 102, 241, 0.12);
+            --purple-glow: rgba(139, 92, 246, 0.08);
+            --primary: #6366f1;
+            --primary-accent: #8b5cf6;
+            --text-main: #ffffff;
+            --text-sub: #cbd5e1;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.12);
+        }
+
+        .light-mode {
+            --bg-deep: #f5f7ff;
+            --indigo-glow: rgba(99, 102, 241, 0.08);
+            --purple-glow: rgba(139, 92, 246, 0.05);
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(99, 102, 241, 0.15);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            margin: 0;
+            overflow-x: hidden;
+            transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1), color 0.6s ease;
+        }
+
+        .gradient-bg {
+            position: relative;
+            background: var(--bg-deep);
+            min-height: 100vh;
+        }
+
+        .gradient-bg::before {
+            content: "";
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(circle, var(--indigo-glow) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+            transition: background 0.6s ease;
+        }
+
+        .gradient-bg::after {
+            content: "";
+            position: fixed;
+            bottom: -10%;
+            right: -10%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, var(--purple-glow) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+            transition: background 0.6s ease;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        body:not(.light-mode) .glass {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .hero-text-gradient {
+            background: linear-gradient(to bottom right, #ffffff 30%, #a5b4fc 60%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+            filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.2));
+            transition: background 0.6s ease;
+        }
+
+        .light-mode .hero-text-gradient {
+            background: linear-gradient(to bottom right, #0f172a 30%, #4338ca 70%, #6d28d9 100%);
+            -webkit-background-clip: text;
+            filter: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.03) translateY(-2px);
+            box-shadow: 0 15px 35px rgba(99, 102, 241, 0.5);
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        .light-mode .btn-secondary {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(99, 102, 241, 0.1);
+        }
+
+        .light-mode .feature-card:hover {
+            background: rgba(255, 255, 255, 1);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .logo-glow {
+            filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6));
+        }
+
+        .light-mode .logo-glow {
+            filter: drop-shadow(0 0 4px rgba(99, 102, 241, 0.2));
+        }
+    </style>
+</head>
+
+<body class="gradient-bg min-h-screen overflow-x-hidden">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 px-6 py-6">
+        <div class="max-w-6xl mx-auto flex items-center justify-between glass rounded-[2rem] px-8 py-3">
+            <div class="flex items-center space-x-3 group cursor-pointer">
+                <div
+                    class="p-1.5 rounded-xl bg-indigo-500/20 border border-indigo-500/30 logo-glow transition-transform group-hover:scale-110">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 12h20"></path>
+                        <path d="M7 12v-3"></path>
+                        <path d="M12 12v-5"></path>
+                        <path d="M17 12v-3"></path>
+                        <path d="M2 12v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5"></path>
+                    </svg>
+                </div>
+                <span class="font-bold text-xl tracking-tight transition-colors group-hover:text-indigo-500">QMA</span>
+            </div>
+
+            <div class="flex items-center space-x-8">
+                <button id="themeToggle" class="text-slate-400 hover:text-indigo-500 transition-all hover:rotate-12"
+                    aria-label="Toggle Theme">
+                    <svg id="sunIcon" class="hidden w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.95 16.95l.707.707M7.05 7.05l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                    </svg>
+                    <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                    </svg>
+                </button>
+                <!-- Navbar Login button -->
+                <button id="navLoginBtn"
+                    class="hidden md:block text-sm font-semibold opacity-70 hover:opacity-100 transition-opacity">Login</button>
+                <!-- Navbar Sign Up button -->
+                <button id="navSignupBtn" class="btn-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold">Sign
+                    Up</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-56 pb-32 px-6 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-6xl md:text-8xl font-extrabold mb-10 hero-text-gradient leading-[1.1]">
+                Quantity <br class="hidden md:block"> Measurement App
+            </h1>
+            <p class="text-lg md:text-2xl opacity-90 mb-14 max-w-2xl mx-auto font-medium leading-relaxed"
+                style="color: var(--text-sub);">
+                Precision in every unit. Experience the world's most intuitive converter for length, weight, and
+                temperature.
+            </p>
+
+            <div class="flex flex-col md:flex-row items-center justify-center gap-6">
+                <!-- Get Started → signup.html -->
+                <button id="heroGetStartedBtn"
+                    class="w-full md:w-auto btn-primary text-white px-10 py-5 rounded-2xl font-bold text-lg flex items-center justify-center space-x-3">
+                    <span>Get Started</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                            d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </button>
+                <!-- Login → login.html -->
+                <button id="heroLoginBtn"
+                    class="w-full md:w-auto btn-secondary px-10 py-5 rounded-2xl font-bold text-lg flex items-center justify-center space-x-3">
+                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                    </svg>
+                    <span>Login</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Section -->
+    <section class="py-24 px-6 relative z-10">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Length -->
+                <div class="feature-card glass p-12 rounded-[2.5rem] text-left group">
+                    <div
+                        class="w-14 h-14 bg-indigo-500/20 rounded-2xl flex items-center justify-center mb-10 border border-indigo-500/30 group-hover:bg-indigo-500/30 transition-colors">
+                        <svg class="w-7 h-7 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-5">Length</h3>
+                    <p class="opacity-80 leading-relaxed text-base font-medium" style="color: var(--text-sub);">
+                        Seamlessly switch between Metric and Imperial units with ultra-precise scientific rounding.
+                    </p>
+                </div>
+
+                <!-- Weight -->
+                <div class="feature-card glass p-12 rounded-[2.5rem] text-left group">
+                    <div
+                        class="w-14 h-14 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-10 border border-purple-500/30 group-hover:bg-purple-500/30 transition-colors">
+                        <svg class="w-7 h-7 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-5">Weight</h3>
+                    <p class="opacity-80 leading-relaxed text-base font-medium" style="color: var(--text-sub);">
+                        High-precision mass calculations for everything from laboratory chemicals to logistics.
+                    </p>
+                </div>
+
+                <!-- Temperature -->
+                <div class="feature-card glass p-12 rounded-[2.5rem] text-left group">
+                    <div
+                        class="w-14 h-14 bg-indigo-500/20 rounded-2xl flex items-center justify-center mb-10 border border-indigo-500/30 group-hover:bg-indigo-500/30 transition-colors">
+                        <svg class="w-7 h-7 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-5">Temperature</h3>
+                    <p class="opacity-80 leading-relaxed text-base font-medium" style="color: var(--text-sub);">
+                        Convert across Celsius, Fahrenheit, and Kelvin scales with instant real-time results.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-20 text-center relative z-10">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="w-full h-px mb-12"
+                style="background: linear-gradient(to right, transparent, var(--text-sub), transparent); opacity: 0.2;">
+            </div>
+            <p class="text-sm font-bold tracking-[0.2em] uppercase opacity-60">
+                &copy; 2024 Quantity Measurement App &bull; Built for Performance
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // ─── THEME TOGGLE ─────────────────────────────────────────────────────────────
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            document.getElementById('sunIcon').classList.toggle('hidden', !isLight);
+            document.getElementById('moonIcon').classList.toggle('hidden', isLight);
+        });
+
+        // ─── NAVIGATION ───────────────────────────────────────────────────────────────
+        // "Get Started" and "Sign Up" → signup.html
+        document.getElementById('heroGetStartedBtn').addEventListener('click', () => {
+            window.location.href = 'signup.html';
+        });
+
+        document.getElementById('navSignupBtn').addEventListener('click', () => {
+            window.location.href = 'signup.html';
+        });
+
+        // "Login" buttons → login.html
+        document.getElementById('heroLoginBtn').addEventListener('click', () => {
+            window.location.href = 'login.html';
+        });
+
+        document.getElementById('navLoginBtn').addEventListener('click', () => {
+            window.location.href = 'login.html';
+        });
+
+        const params = new URLSearchParams(window.location.search);
+        const tokenFromUrl = params.get("token");
+
+        if (tokenFromUrl) {
+            // Save token (same key you already use)
+            localStorage.setItem("qma_token", tokenFromUrl);
+
+            // Clean URL (remove token from address bar)
+            window.history.replaceState({}, document.title, "/");
+
+            // Redirect to dashboard
+            window.location.href = "dashboard.html";
+        }
+
+        // ✅ EXISTING CHECK (already in your code)
+        if (localStorage.getItem('qma_token')) {
+            window.location.href = 'dashboard.html';
+        }
+        // ─── AUTO REDIRECT IF ALREADY LOGGED IN ──────────────────────────────────────
+        // If user already has a valid token, skip landing and go straight to dashboard
+        if (localStorage.getItem('qma_token')) {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+
+</html>

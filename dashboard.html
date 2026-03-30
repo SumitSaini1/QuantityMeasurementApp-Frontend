@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Quantity Measurement App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #F8FAFC;
+            --bg-surface: #FFFFFF;
+            --primary: #2563EB;
+            --text-main: #1E293B;
+            --text-sub: #64748B;
+            --border-color: rgba(226, 232, 240, 1);
+            --input-bg: #FFFFFF;
+            --glass-bg: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(226, 232, 240, 0.8);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            --sidebar-active: rgba(37, 99, 235, 0.08);
+            --bg-gradient: radial-gradient(circle at center, #FFFFFF 0%, #F8FAFC 100%);
+        }
+
+        .dark-mode {
+            --bg-deep: #0f172a;
+            --bg-surface: #1e293b;
+            --primary: #6366f1;
+            --text-main: #ffffff;
+            --text-sub: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(255, 255, 255, 0.03);
+            --glass-bg: rgba(30, 41, 59, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            --sidebar-active: rgba(99, 102, 241, 0.08);
+            --bg-gradient: linear-gradient(180deg, #0f172a 0%, #111827 50%, #0b1120 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            margin: 0;
+            overflow-x: hidden;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+
+        .gradient-bg {
+            position: relative;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-item {
+            color: var(--text-sub);
+            transition: all 0.2s ease;
+        }
+
+        .nav-item.active {
+            background: var(--sidebar-active);
+            border-left: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .nav-item:hover:not(.active) {
+            color: var(--text-main);
+            background: var(--sidebar-active);
+        }
+
+        .input-field {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 42px;
+            padding: 0 12px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        input.input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+        }
+
+        .dropdown-container {
+            position: relative;
+            user-select: none;
+        }
+
+        .dropdown-trigger {
+            cursor: pointer;
+            justify-content: space-between;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            z-index: 50;
+            max-height: 240px;
+            overflow-y: auto;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 4px;
+            transform-origin: top;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateY(-10px) scale(0.98);
+            pointer-events: none;
+            box-shadow: var(--shadow);
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .dropdown-item {
+            padding: 10px 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            color: var(--text-main);
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(99, 102, 241, 0.08);
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #ffffff;
+            height: 42px;
+            padding: 0 24px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .label-text {
+            display: block;
+            font-size: 0.625rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+            padding-left: 4px;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="gradient-bg flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside
+        class="sidebar fixed inset-y-0 left-0 w-[240px] glass border-r z-50 transition-transform duration-300 lg:translate-x-0">
+        <div class="p-5 flex flex-col h-full">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2.5 mb-8">
+                <div class="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round" class="text-blue-600 dark:text-indigo-400">
+                        <path d="M2 12h20"></path>
+                        <path d="M7 12v-3"></path>
+                        <path d="M12 12v-5"></path>
+                        <path d="M17 12v-3"></path>
+                        <path d="M2 12v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5"></path>
+                    </svg>
+                </div>
+                <span class="font-bold text-lg tracking-tight">QMA</span>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-grow space-y-1">
+                <a href="#" class="nav-item active flex items-center space-x-3 px-3 py-2.5 rounded-lg">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="font-semibold text-xs uppercase tracking-wider">Dashboard</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    <span class="font-semibold text-xs uppercase tracking-wider">Convert</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="font-semibold text-xs uppercase tracking-wider">History</span>
+                </a>
+            </nav>
+
+            <!-- Logout -->
+            <button id="logoutBtn"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-all mt-auto">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span class="font-semibold text-xs uppercase tracking-wider">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content flex-grow lg:ml-[240px] flex flex-col min-h-screen">
+
+        <!-- Top Navbar -->
+        <header class="h-16 glass border-b flex items-center justify-between px-6 sticky top-0 z-40">
+            <h1 class="text-sm font-bold uppercase tracking-widest opacity-80">Dashboard</h1>
+
+            <div class="flex items-center space-x-4">
+                <!-- Theme Toggle -->
+                <button id="themeToggle"
+                    class="text-slate-400 hover:text-blue-600 dark:hover:text-indigo-400 transition-all"
+                    aria-label="Toggle Theme">
+                    <svg id="sunIcon" class="hidden w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.95 16.95l.707.707M7.05 7.05l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                    </svg>
+                    <svg id="moonIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                    </svg>
+                </button>
+
+                <!-- User Profile -->
+                <div class="flex items-center space-x-3 pl-4 border-l border-white/10 dark:border-white/5">
+                    <div class="text-right">
+                        <p id="displayUsername" class="text-xs font-bold">User</p>
+                        <p class="text-[9px] font-medium opacity-40 uppercase tracking-widest">Premium User</p>
+                    </div>
+                    <div id="displayAvatar"
+                        class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-[10px] text-white shadow-lg">
+                        U
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Body -->
+        <main class="pt-10 pb-16 px-6 max-w-5xl mx-auto w-full space-y-6 relative z-10">
+
+            <!-- Measurement Panel -->
+            <section class="glass p-8 rounded-2xl">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <h2 class="text-sm font-extrabold uppercase tracking-widest opacity-90">Measurement Panel</h2>
+                </div>
+
+                <!-- Control Form -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="space-y-1">
+                        <label class="label-text">Measurement Type</label>
+                        <div id="measurementType" class="dropdown-container" data-value="Length">
+                            <div class="dropdown-trigger input-field" onclick="toggleDropdown('measurementType')">
+                                <span class="trigger-text">Length</span>
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                            <div class="dropdown-menu">
+                                <ul class="options-list">
+                                    <li class="dropdown-item"
+                                        onclick="selectOption('measurementType', 'Length', 'Length')">Length</li>
+                                    <li class="dropdown-item"
+                                        onclick="selectOption('measurementType', 'Weight', 'Weight')">Weight</li>
+                                    <li class="dropdown-item"
+                                        onclick="selectOption('measurementType', 'Volume', 'Volume')">Volume</li>
+                                    <li class="dropdown-item"
+                                        onclick="selectOption('measurementType', 'Temperature', 'Temperature')">
+                                        Temperature</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="label-text">Operation</label>
+                        <div id="operationType" class="dropdown-container" data-value="Convert">
+                            <div class="dropdown-trigger input-field" onclick="toggleDropdown('operationType')">
+                                <span class="trigger-text">Convert</span>
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                            <div class="dropdown-menu">
+                                <ul class="options-list"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mb-10">
+                    <div class="space-y-4">
+                        <label class="label-text">Values & Units</label>
+                        <div class="flex space-x-2">
+                            <input type="number" id="val1" placeholder="Value 1" class="input-field flex-grow">
+                            <div id="unit1" class="dropdown-container flex-grow unit-dropdown" data-value="">
+                                <div class="dropdown-trigger input-field" onclick="toggleDropdown('unit1')">
+                                    <span class="trigger-text">Select</span>
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                                <div class="dropdown-menu">
+                                    <ul class="options-list"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="val2Container" class="flex space-x-2">
+                            <input type="number" id="val2" placeholder="Value 2" class="input-field flex-grow">
+                            <div id="unit2" class="dropdown-container flex-grow unit-dropdown" data-value="">
+                                <div class="dropdown-trigger input-field" onclick="toggleDropdown('unit2')">
+                                    <span class="trigger-text">Select</span>
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                                <div class="dropdown-menu">
+                                    <ul class="options-list"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="targetContainer" class="space-y-4">
+                        <label class="label-text">Target Configuration</label>
+                        <div class="space-y-2">
+                            <span class="text-[10px] font-medium opacity-60 uppercase pl-1">Convert To:</span>
+                            <div id="targetUnit" class="dropdown-container unit-dropdown" data-value="">
+                                <div class="dropdown-trigger input-field" onclick="toggleDropdown('targetUnit')">
+                                    <span class="trigger-text">Select</span>
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                                <div class="dropdown-menu">
+                                    <ul class="options-list"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calculate Button -->
+                <div class="flex justify-center border-t border-white/5 pt-8">
+                    <button id="calculateBtn" onclick="handleCalculation()"
+                        class="btn-primary flex items-center space-x-2">
+                        <span>Calculate Results</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Result Section -->
+            <section id="results" class="relative group">
+                <div
+                    class="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-1000">
+                </div>
+                <div class="glass relative p-10 rounded-2xl flex flex-col items-center justify-center text-center">
+                    <p class="text-[9px] font-black uppercase tracking-[0.4em] opacity-30 mb-4">Output Result</p>
+                    <div class="flex items-baseline space-x-2">
+                        <span id="resultValue" class="text-4xl md:text-5xl font-black"
+                            style="color: var(--text-main)">0.00</span>
+                        <span id="resultUnit" class="text-lg font-bold opacity-50">Units</span>
+                    </div>
+                    <div id="statusBadge"
+                        class="mt-6 px-4 py-1.5 rounded-full bg-indigo-500/5 border border-indigo-500/10 text-indigo-400 text-[9px] font-bold tracking-widest uppercase">
+                        Ready for calculation
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="mt-auto py-6 text-center opacity-20">
+            <p class="text-[9px] font-bold tracking-[0.3em] uppercase">
+                &copy; 2024 Quantity Measurement App &bull; Arctic Precision Engine
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        const BASE_URL = "http://localhost:8080";
+
+        // ─── AUTH CHECK ─────────────────────────
+        const token = localStorage.getItem('qma_token');
+        if (!token) window.location.href = 'index.html';
+
+        // ─── USER INFO ──────────────────────────
+        function getUsernameFromToken(token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                return payload.username || payload.sub || payload.email || 'User';
+            } catch {
+                return 'User';
+            }
+        }
+
+        const username = getUsernameFromToken(token);
+        document.getElementById('displayUsername').textContent = username;
+        document.getElementById('displayAvatar').textContent = username[0].toUpperCase();
+
+        // ─── LOGOUT ─────────────────────────────
+        document.getElementById('logoutBtn').onclick = () => {
+            localStorage.removeItem('qma_token');
+            window.location.href = 'index.html';
+        };
+
+        // ─── THEME TOGGLE (FIXED WITH ICONS) ───
+        const themeBtn = document.getElementById('themeToggle');
+        const sun = document.getElementById('sunIcon');
+        const moon = document.getElementById('moonIcon');
+
+        themeBtn.onclick = () => {
+            document.body.classList.toggle('dark-mode');
+            const dark = document.body.classList.contains('dark-mode');
+            sun.classList.toggle('hidden', !dark);
+            moon.classList.toggle('hidden', dark);
+        };
+
+        // ─── UNIT MAP ───────────────────────────
+        const unitMap = {
+            Length: ["FEET", "INCHES", "YARDS", "CENTIMETERS"],
+            Weight: ["KILOGRAM", "GRAM", "POUND"],
+            Volume: ["LITRE", "MILLILITRE", "GALLON"],
+            Temperature: ["CELSIUS", "FAHRENHEIT", "KELVIN"]
+        };
+
+        // ─── OPERATIONS ─────────────────────────
+        const operations = ["Convert", "Add", "Subtract", "Compare", "Divide"];
+
+        // ─── DROPDOWN LOGIC ─────────────────────
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            const menu = dropdown.querySelector('.dropdown-menu');
+
+            document.querySelectorAll('.dropdown-menu').forEach(m => {
+                if (m !== menu) m.classList.remove('show');
+            });
+
+            menu.classList.toggle('show');
+        }
+
+        function selectOption(id, value, label) {
+            const el = document.getElementById(id);
+            el.dataset.value = value;
+            el.querySelector('.trigger-text').textContent = label;
+            el.querySelector('.dropdown-menu').classList.remove('show');
+
+            if (id === "measurementType") {
+                initUnits();
+                initOperations();
+            }
+
+            if (id === "operationType") handleOperationUI();
+        }
+
+        // close dropdown outside click
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('.dropdown-container')) {
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+            }
+        });
+
+        // ─── INIT UNITS ─────────────────────────
+        function initUnits() {
+            const type = document.getElementById('measurementType').dataset.value;
+            const units = unitMap[type];
+
+            document.querySelectorAll('.unit-dropdown').forEach(d => {
+                const list = d.querySelector('.options-list');
+                list.innerHTML = "";
+
+                units.forEach(u => {
+                    const li = document.createElement('li');
+                    li.className = 'dropdown-item';
+                    li.innerText = u;
+                    li.onclick = () => selectOption(d.id, u, u);
+                    list.appendChild(li);
+                });
+
+                selectOption(d.id, units[0], units[0]);
+            });
+        }
+
+        // ─── INIT OPERATIONS ────────────────────
+        function initOperations() {
+            const opDropdown = document.getElementById('operationType');
+            const list = opDropdown.querySelector('.options-list');
+            const type = document.getElementById('measurementType').dataset.value;
+
+            list.innerHTML = "";
+
+            operations.forEach(op => {
+                if (type === "Temperature" && !["Convert", "Compare"].includes(op)) return;
+
+                const li = document.createElement('li');
+                li.className = 'dropdown-item';
+                li.innerText = op;
+                li.onclick = () => selectOption('operationType', op, op);
+                list.appendChild(li);
+            });
+
+            selectOption('operationType', "Convert", "Convert");
+        }
+
+        // ─── UI CONTROL BASED ON OPERATION ──────
+        function handleOperationUI() {
+            const op = document.getElementById('operationType').dataset.value;
+
+            const val2Box = document.getElementById('val2Container');
+            const targetBox = document.getElementById('targetContainer');
+
+            if (op === "Convert") {
+                val2Box.classList.add('hidden');
+                targetBox.classList.remove('hidden');
+            } else if (op === "Add" || op === "Subtract") {
+                val2Box.classList.remove('hidden');
+                targetBox.classList.add('hidden');
+            } else {
+                val2Box.classList.remove('hidden');
+                targetBox.classList.add('hidden');
+            }
+        }
+
+        // ─── STATUS ─────────────────────────────
+        function setStatus(msg, type) {
+            const badge = document.getElementById('statusBadge');
+            badge.innerText = msg;
+
+            badge.className = 'mt-6 px-4 py-1.5 rounded-full text-[9px] font-bold uppercase border ';
+
+            if (type === 'success') {
+                badge.className += 'bg-green-500/5 border-green-500/20 text-green-400';
+            } else if (type === 'error') {
+                badge.className += 'bg-red-500/5 border-red-500/20 text-red-400';
+            } else {
+                badge.className += 'bg-indigo-500/5 border-indigo-500/10 text-indigo-400';
+            }
+        }
+
+        // ─── API CALL ───────────────────────────
+        async function handleCalculation() {
+            const btn = document.getElementById('calculateBtn');
+            btn.disabled = true;
+            btn.innerHTML = "Processing...";
+
+            try {
+                const op = document.getElementById('operationType').dataset.value;
+
+                const v1 = parseFloat(val1.value);
+                const v2Input = val2.value;
+                const v2 = v2Input ? parseFloat(v2Input) : null;
+
+                const u1 = unit1.dataset.value;
+                const u2 = unit2.dataset.value;
+                const target = targetUnit.dataset.value;
+
+                if (isNaN(v1)) throw "Enter value 1";
+
+                if (["Add", "Subtract", "Compare", "Divide"].includes(op) && v2 === null) {
+                    throw "Enter value 2";
+                }
+
+                if (op === "Convert" && (!u1 || !target)) {
+                    throw "Select units properly";
+                }
+
+                let body, endpoint;
+
+                if (op === "Convert") {
+                    endpoint = "/api/quantity/convert";
+                    body = { value: v1, fromUnit: u1, toUnit: target };
+                } else {
+                    endpoint = `/api/quantity/${op.toLowerCase()}`;
+                    body = { value1: v1, value2: v2, unit1: u1, unit2: u2 };
+                }
+
+                const res = await fetch(BASE_URL + endpoint, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (res.status === 401 || res.status === 403) {
+                    localStorage.clear();
+                    window.location = 'login.html';
+                    return;
+                }
+
+                if (!res.ok) throw "Server error";
+
+                const data = await res.json();
+
+                resultValue.innerText =
+                    typeof data.resultValue === "number"
+                        ? data.resultValue.toFixed(4)
+                        : data.resultValue;
+
+                resultUnit.innerText = data.resultUnit ?? "—";
+
+                setStatus("✓ Success", "success");
+
+            } catch (e) {
+                setStatus(e, "error");
+                resultValue.innerText = "—";
+                resultUnit.innerText = "";
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "Calculate Results";
+            }
+        }
+
+        // ─── INIT ───────────────────────────────
+        window.onload = () => {
+            initUnits();
+            initOperations();
+        };
+    </script>
+</body>
+
+</html>
