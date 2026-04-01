@@ -673,7 +673,7 @@
 
                 if (!res.ok){
                     const errData=await res.json();
-                    throw errData.message();
+                    throw errData.message;
                 }
 
                 const data = await res.json();
