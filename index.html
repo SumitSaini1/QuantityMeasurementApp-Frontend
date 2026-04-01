@@ -207,7 +207,7 @@
             </p>
 
             <div class="flex flex-col md:flex-row items-center justify-center gap-6">
-                <!-- Get Started → signup.html -->
+                <!-- Get Started → dashboard.html directly -->
                 <button id="heroGetStartedBtn"
                     class="w-full md:w-auto btn-primary text-white px-10 py-5 rounded-2xl font-bold text-lg flex items-center justify-center space-x-3">
                     <span>Get Started</span>
@@ -303,11 +303,12 @@
         });
 
         // ─── NAVIGATION ───────────────────────────────────────────────────────────────
-        // "Get Started" and "Sign Up" → signup.html
+        // "Get Started" → dashboard.html directly (no login required)
         document.getElementById('heroGetStartedBtn').addEventListener('click', () => {
-            window.location.href = 'signup.html';
+            window.location.href = 'dashboard.html';
         });
 
+        // "Sign Up" navbar button → signup.html
         document.getElementById('navSignupBtn').addEventListener('click', () => {
             window.location.href = 'signup.html';
         });
@@ -321,25 +322,15 @@
             window.location.href = 'login.html';
         });
 
+        // ─── TOKEN FROM URL (OAuth / magic link) ──────────────────────────────────────
         const params = new URLSearchParams(window.location.search);
         const tokenFromUrl = params.get("token");
 
         if (tokenFromUrl) {
-            // Save token (same key you already use)
             localStorage.setItem("qma_token", tokenFromUrl);
-
-            // Clean URL (remove token from address bar)
             window.history.replaceState({}, document.title, "/");
-
-            // Redirect to dashboard
             window.location.href = "dashboard.html";
         }
-
-        // ✅ EXISTING CHECK (already in your code)
-        if (localStorage.getItem('qma_token')) {
-            window.location.href = 'dashboard.html';
-        }
-        
     </script>
 </body>
 
