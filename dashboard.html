@@ -671,7 +671,10 @@
                     return;
                 }
 
-                if (!res.ok) throw "Server error";
+                if (!res.ok){
+                    const errData=await res.json();
+                    throw errData.message();
+                }
 
                 const data = await res.json();
 
