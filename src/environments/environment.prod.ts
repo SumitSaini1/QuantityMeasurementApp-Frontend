@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'http://localhost:8080',
-  authServiceUrl: 'http://localhost:8081'
+  apiBaseUrl: 'https://api-gateway-production-4492.up.railway.app',
+  authServiceUrl: 'https://auth-service-production-2f6f.up.railway.app'
 };
